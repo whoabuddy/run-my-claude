@@ -1,4 +1,5 @@
-import type { AppContext, TokenType, SettleResult } from "../types";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { AppContext, TokenType } from "../types";
 
 /**
  * Base class for Claude endpoints
@@ -23,15 +24,10 @@ export abstract class BaseClaudeEndpoint {
    * Get payer address from settlement result
    */
   protected getPayerAddress(c: AppContext): string | null {
-    const settleResult = c.get("settleResult") as SettleResult | undefined;
+    const settleResult = c.get("settleResult");
 
     if (settleResult) {
-      return (
-        settleResult.sender ||
-        settleResult.senderAddress ||
-        settleResult.sender_address ||
-        null
-      );
+      return settleResult.sender || null;
     }
 
     return null;
@@ -43,7 +39,7 @@ export abstract class BaseClaudeEndpoint {
   protected errorResponse(
     c: AppContext,
     error: string,
-    status: number = 400
+    status: ContentfulStatusCode = 400
   ): Response {
     const tokenType = this.getTokenType(c);
     return c.json({ error, tokenType }, status);

@@ -1,5 +1,17 @@
 import type { Context } from "hono";
 
+// Context variables passed between middleware and handlers
+export interface Variables {
+  parsedBody: Record<string, unknown>;
+  inputSize: number;
+  effort: EffortLevel;
+  priceBreakdown: PriceBreakdown;
+  tokenType: TokenType;
+  product: Product;
+  settleResult: SettleResult;
+  signedTx: string;
+}
+
 // Environment bindings from wrangler.jsonc
 export interface Env {
   // Workers AI
@@ -22,8 +34,8 @@ export interface Env {
   ANTHROPIC_API_KEY?: string;
 }
 
-// Hono context with our bindings
-export type AppContext = Context<{ Bindings: Env }>;
+// Hono context with our bindings and variables
+export type AppContext = Context<{ Bindings: Env; Variables: Variables }>;
 
 // Effort levels for Claude execution
 export type EffortLevel = "quick" | "standard" | "detailed" | "comprehensive";

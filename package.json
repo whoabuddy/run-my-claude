@@ -4,27 +4,31 @@
   "description": "Payment-gated Claude Code API via x402 micropayments",
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "deploy:staging": "wrangler deploy --env staging",
+    "wrangler": "set -a && . ./.env && set +a && npx wrangler",
+    "dev": "npm run wrangler -- dev",
+    "deploy": "npm run wrangler -- deploy",
+    "deploy:staging": "npm run wrangler -- deploy --env staging",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "npm run wrangler -- types",
+    "kv:create": "npm run wrangler -- kv namespace create METRICS && npm run wrangler -- kv namespace create PRODUCTS",
+    "kv:create:staging": "npm run wrangler -- kv namespace create METRICS --env staging && npm run wrangler -- kv namespace create PRODUCTS --env staging"
   },
   "dependencies": {
-    "@hono/chanfana": "^2.0.0",
-    "hono": "^4.6.0",
-    "x402-stacks": "^0.1.0",
+    "@stacks/transactions": "^7.3.1",
+    "chanfana": "^3.0.0",
+    "hono": "^4.11.3",
+    "x402-stacks": "^1.1.1",
     "zod": "^3.23.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241218.0",
-    "@types/node": "^22.0.0",
+    "@types/node": "^25.0.0",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0",
-    "wrangler": "^3.99.0"
+    "wrangler": "^4.56.0"
   },
   "author": "whoabuddy",
   "license": "MIT",

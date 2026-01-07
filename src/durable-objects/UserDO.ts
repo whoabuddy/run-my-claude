@@ -1,14 +1,15 @@
 import { DurableObject } from "cloudflare:workers";
+import type { Env } from "../types";
 
 /**
  * User Durable Object - per-user state management
  * Keyed by payer Stacks address
  */
-export class UserDurableObject extends DurableObject {
+export class UserDurableObject extends DurableObject<Env> {
   private sql: SqlStorage;
   private initialized = false;
 
-  constructor(ctx: DurableObjectState, env: unknown) {
+  constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.sql = ctx.storage.sql;
   }

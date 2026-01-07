@@ -1,15 +1,15 @@
 import { DurableObject } from "cloudflare:workers";
-import type { Job, JobStatus, EffortLevel, TokenType, PriceBreakdown } from "../types";
+import type { Job, JobStatus, EffortLevel, TokenType, PriceBreakdown, Env } from "../types";
 
 /**
  * Job Durable Object - manages job state with SQLite
  * Each instance can handle multiple jobs (not per-job isolation)
  */
-export class JobDurableObject extends DurableObject {
+export class JobDurableObject extends DurableObject<Env> {
   private sql: SqlStorage;
   private initialized = false;
 
-  constructor(ctx: DurableObjectState, env: unknown) {
+  constructor(ctx: DurableObjectState, env: Env) {
     super(ctx, env);
     this.sql = ctx.storage.sql;
   }
@@ -88,14 +88,14 @@ export class JobDurableObject extends DurableObject {
     const id = crypto.randomUUID();
 
     // Check for duplicate (same input within 5 minutes)
-    const existing = this.sql.exec<Job>(`
+    const existing = this.sql.exec(`
       SELECT * FROM jobs
       WHERE payer_address = ?
         AND input_hash = ?
         AND product_slug = ?
         AND created_at > datetime('now', '-5 minutes')
       LIMIT 1
-    `, params.payerAddress, params.inputHash, params.productSlug).toArray();
+    `, params.payerAddress, params.inputHash, params.productSlug).toArray() as unknown as Job[];
 
     if (existing.length > 0) {
       return existing[0];
@@ -129,9 +129,9 @@ export class JobDurableObject extends DurableObject {
   async getJob(jobId: string): Promise<Job | null> {
     this.ensureSchema();
 
-    const results = this.sql.exec<Job>(`
+    const results = this.sql.exec(`
       SELECT * FROM jobs WHERE id = ?
-    `, jobId).toArray();
+    `, jobId).toArray() as unknown as Job[];
 
     return results[0] || null;
   }
@@ -232,12 +232,12 @@ export class JobDurableObject extends DurableObject {
   async getJobsByPayer(payerAddress: string, limit = 50): Promise<Job[]> {
     this.ensureSchema();
 
-    return this.sql.exec<Job>(`
+    return this.sql.exec(`
       SELECT * FROM jobs
       WHERE payer_address = ?
       ORDER BY created_at DESC
       LIMIT ?
-    `, payerAddress, limit).toArray();
+    `, payerAddress, limit).toArray() as unknown as Job[];
   }
 
   /**
@@ -246,13 +246,13 @@ export class JobDurableObject extends DurableObject {
   async getRetryableJobs(): Promise<Job[]> {
     this.ensureSchema();
 
-    return this.sql.exec<Job>(`
+    return this.sql.exec(`
       SELECT * FROM jobs
       WHERE status = 'retry_eligible'
         AND retry_after <= datetime('now')
       ORDER BY retry_after ASC
       LIMIT 10
-    `).toArray();
+    `).toArray() as unknown as Job[];
   }
 
   /**

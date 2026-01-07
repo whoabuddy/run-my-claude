@@ -151,31 +151,35 @@ export function x402ClaudeMiddleware(productSlug: string): MiddlewareHandler {
 
     // Verify and settle payment
     try {
-      const verifier = new X402PaymentVerifier({
-        recipientAddress: c.env.X402_SERVER_ADDRESS,
-        network: c.env.X402_NETWORK,
-        facilitatorUrl: c.env.X402_FACILITATOR_URL,
-      });
+      const verifier = new X402PaymentVerifier(
+        c.env.X402_FACILITATOR_URL,
+        c.env.X402_NETWORK
+      );
 
       const minAmount = toSmallestUnit(priceBreakdown.total, tokenType);
 
       const settleResult = await verifier.settlePayment(paymentHeader, {
+        expectedRecipient: c.env.X402_SERVER_ADDRESS,
         minAmount,
         tokenType,
       });
 
-      if (!settleResult.success) {
+      if (!settleResult.isValid) {
         return c.json(
           {
             error: "Payment settlement failed",
-            details: settleResult.error,
+            details: settleResult.validationError,
           },
           402
         );
       }
 
       // Store settlement result for handler
-      c.set("settleResult", settleResult);
+      c.set("settleResult", {
+        success: true,
+        txId: settleResult.txId,
+        sender: settleResult.sender,
+      });
       c.set("signedTx", paymentHeader);
 
       // Add payment response header

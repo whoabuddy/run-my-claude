@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { fromHono } from "@hono/chanfana";
-import type { Env, AppContext } from "./types";
+import { fromHono } from "chanfana";
+import type { Env, AppContext, Variables } from "./types";
 import { JobDurableObject } from "./durable-objects/JobDO";
 import { UserDurableObject } from "./durable-objects/UserDO";
 import { x402ClaudeMiddleware, getPayerAddress } from "./middleware/x402-claude";
@@ -11,8 +11,8 @@ import { calculatePrice, getMaxTokens } from "./utils/claude-pricing";
 import { renderStatusPage, renderNotFoundPage } from "./components/status-page";
 import type { EffortLevel, TokenType, PriceBreakdown, Product, Job } from "./types";
 
-// Create Hono app
-const app = new Hono<{ Bindings: Env }>();
+// Create Hono app with typed bindings and variables
+const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 // OpenAPI documentation via chanfana
 const openapi = fromHono(app, {
@@ -265,5 +265,10 @@ app.post("/api/usage", x402ClaudeMiddleware("summarize"), async (c: AppContext) 
 // EXPORTS
 // =============================================================================
 
-export default app;
+// Export Durable Object classes for wrangler
 export { JobDurableObject, UserDurableObject };
+
+// Export Worker handler with explicit typing
+export default {
+  fetch: app.fetch,
+} satisfies ExportedHandler<Env>;
