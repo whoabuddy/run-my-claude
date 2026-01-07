@@ -54,11 +54,11 @@
   "kv_namespaces": [
     {
       "binding": "METRICS",
-      "id": "PLACEHOLDER_METRICS_ID"
+      "id": "beb9d32251c245b282651be6127ee1f9"
     },
     {
       "binding": "PRODUCTS",
-      "id": "PLACEHOLDER_PRODUCTS_ID"
+      "id": "c33bb7effc7d41359d3aeb2583b4e316"
     }
   ],
 
@@ -69,16 +69,33 @@
       "vars": {
         "X402_NETWORK": "testnet",
         "X402_SERVER_ADDRESS": "ST31JEZWX4S131326VKM05QKJ0TDGNVVE0DGNM4BP",
-        "X402_FACILITATOR_URL": "https://facilitator.x402stacks.xyz"
+        "X402_FACILITATOR_URL": "https://facilitator.x402stacks.xyz",
+        "CLAUDE_EXECUTOR": "workers-ai",
+        "MAX_JOB_DURATION_MS": "60000"
+      },
+      "ai": {
+        "binding": "AI"
+      },
+      "durable_objects": {
+        "bindings": [
+          {
+            "name": "JOB_DO",
+            "class_name": "JobDurableObject"
+          },
+          {
+            "name": "USER_DO",
+            "class_name": "UserDurableObject"
+          }
+        ]
       },
       "kv_namespaces": [
         {
           "binding": "METRICS",
-          "id": "PLACEHOLDER_STAGING_METRICS_ID"
+          "id": "16fd8a886bda4e948c11532edb5ad8bc"
         },
         {
           "binding": "PRODUCTS",
-          "id": "PLACEHOLDER_STAGING_PRODUCTS_ID"
+          "id": "395337307ff14dfa86298ab0f4acd91c"
         }
       ]
     }
