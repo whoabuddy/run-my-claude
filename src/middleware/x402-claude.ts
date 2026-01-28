@@ -14,8 +14,8 @@ const TOKEN_CONTRACTS = {
     },
     USDCx: {
       address: "SP120SBRBQJ00MCWS7TM5R8WJNTTKD5K0HFRC2CNE",
-      name: "usdc-token",
-      assetName: "usdc",
+      name: "usdcx",
+      assetName: "usdcx-token",
     },
   },
   testnet: {
@@ -25,9 +25,9 @@ const TOKEN_CONTRACTS = {
       assetName: "sbtc",
     },
     USDCx: {
-      address: "ST1F7QA2MDF17S807EPA36TSS8AMEFY4KA9TVGWXT",
-      name: "usdc-token",
-      assetName: "usdc",
+      address: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      name: "usdcx",
+      assetName: "usdcx-token",
     },
   },
 };
